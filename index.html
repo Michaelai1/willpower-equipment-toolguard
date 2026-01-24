@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Will Power Equipment - Equipment Issue Reporting">
+    <title>Will Power Equipment - Issue Reporting</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --color-bg-primary: #0a0a0a;
+            --color-bg-secondary: #1a1a1a;
+            --color-bg-card: #242424;
+            --color-bg-input: #2a2a2a;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #b0b0b0;
+            --color-text-disabled: #666666;
+            --accent: #F5B301;
+            --accentSoft: rgba(245,179,1,0.18);
+            --accentBorder: rgba(245,179,1,0.65);
+            --color-accent: #F5B301;
+            --color-accent-hover: #F5C630;
+            --color-accent-press: #D99F00;
+            --color-success: #4caf50;
+            --color-error: #f44336;
+            --color-border: #3a3a3a;
+            --color-border-focus: #F5B301;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+            
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 350ms ease;
+            
+            --font-size-xs: 0.8125rem; /* 13px */
+            --font-size-sm: 0.9375rem; /* 15px */
+            --font-size-base: 1rem; /* 16px */
+            --font-size-lg: 1.125rem; /* 18px */
+            --font-size-xl: 1.25rem; /* 20px */
+            --font-size-title: 1.375rem; /* 22px */
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+        }
+        
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Layout */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .view {
+            display: none;
+            flex: 1;
+            padding: var(--spacing-md);
+            padding-bottom: calc(var(--spacing-md) + 60px);
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Bar */
+        .header-top-bar {
+            background: #050505;
+            height: 4px;
+            margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) 0;
+        }
+        
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-bg-secondary);
+            margin: 0 calc(-1 * var(--spacing-md)) var(--spacing-lg);
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .header-bar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(245, 179, 1, 0.6);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .header-brand-mark {
+            width: 3px;
+            height: 20px;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+        
+        .header-title {
+            font-size: var(--font-size-title);
+            color: var(--color-text-primary);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-title .title-bold {
+            font-weight: 800;
+        }
+        
+        .header-title .title-normal {
+            font-weight: 600;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-xl);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: all var(--transition-fast);
+        }
+        
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text-primary);
+        }
+        
+        .close-button:active {
+            opacity: 0.6;
+        }
+        
+        /* Asset Badge */
+        .asset-badge {
+            display: inline-block;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            line-height: 1.3;
+        }
+        
+        .asset-badge[data-asset="Unassigned"],
+        .asset-badge[data-asset="Unknown"] {
+            display: none;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .action-button {
+            background: rgba(245, 179, 1, 0.15);
+            border: 2px solid var(--accent);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+            text-align: left;
+            min-height: 80px;
+        }
+        
+        .action-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accentSoft);
+            border-color: var(--accent);
+        }
+        
+        .action-button:not(:disabled):active {
+            transform: translateY(1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .action-button:not(:disabled) .action-button-icon {
+            color: var(--accent);
+        }
+        
+        .action-button:disabled {
+            background: var(--color-bg-card);
+            border-color: var(--color-border);
+            color: var(--color-text-disabled);
+            cursor: not-allowed;
+            opacity: 0.5;
+            box-shadow: none;
+        }
+        
+        .action-button:disabled .action-button-icon {
+            color: var(--color-text-disabled);
+        }
+        
+        .action-button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: var(--color-border);
+        }
+        
+        .action-button-content {
+            flex: 1;
+        }
+        
+        .action-button-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+        }
+        
+        .action-button-subtext {
+            display: block;
+            font-size: var(--font-size-xs);
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        
+        .action-button-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: color var(--transition-base);
+        }
+        
+        /* Found Equipment Section */
+        .found-equipment {
+            margin-top: auto;
+            padding-top: var(--spacing-md);
+            padding-bottom: 32px;
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .found-equipment-logo {
+            margin: 0 auto 16px;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .found-equipment-logo img {
+            width: 140px;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+            opacity: 0.7;
+            filter: invert(1) grayscale(1) contrast(100) brightness(2);
+            mix-blend-mode: plus-lighter;
+            background: transparent;
+        }
+        
+        .found-equipment-title {
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-xs);
+        }
+        
+        .found-equipment-phone {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .found-equipment a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .found-equipment a:active {
+            color: var(--accent);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            flex: 1;
+        }
+        
+        .form-heading {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xl);
+            color: var(--color-text-primary);
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        /* Selectable Cards */
+        .selectable-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .selectable-card {
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .selectable-card:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .selectable-card.selected {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .severity-card.down {
+            border-color: #FF4444;
+        }
+        
+        .severity-card.down.selected {
+            border-color: #FF4444;
+            background: rgba(255, 68, 68, 0.15);
+        }
+        
+        .severity-card.down:hover:not(.disabled) {
+            border-color: #FF4444;
+        }
+        
+        .severity-card.performance {
+            border-color: #F5B301;
+        }
+        
+        .severity-card.performance.selected {
+            border-color: #F5B301;
+            background: rgba(245, 179, 1, 0.15);
+        }
+        
+        .severity-card.performance:hover:not(.disabled) {
+            border-color: #F5B301;
+        }
+        
+        .severity-card.minor {
+            border-color: #4caf50;
+        }
+        
+        .severity-card.minor.selected {
+            border-color: #4caf50;
+            background: rgba(76, 175, 80, 0.15);
+        }
+        
+        .severity-card.minor:hover:not(.disabled) {
+            border-color: #4caf50;
+        }
+        
+        .severity-card-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        
+        .severity-card-content {
+            flex: 1;
+        }
+        
+        .severity-card-label {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .severity-card-subtext {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+        
+        .selectable-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .selectable-card-label {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        /* Form Fields */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .form-label .required {
+            color: var(--color-error);
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: #1A1A1A;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 0 3px rgba(245, 179, 1, 0.1);
+        }
+        
+        .form-input-locked {
+            background: var(--color-bg-card);
+            border: 2px solid var(--accent);
+            color: var(--color-text-primary);
+            font-weight: 600;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-error {
+            color: var(--color-error);
+            font-size: var(--font-size-sm);
+            margin-top: var(--spacing-xs);
+            display: none;
+        }
+        
+        .form-group.error .form-error {
+            display: block;
+        }
+        
+        .form-group.error .form-input,
+        .form-group.error .form-select,
+        .form-group.error .form-textarea {
+            border-color: var(--color-error);
+        }
+        
+        /* Photo Uploader */
+        .photo-uploader {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .photo-input-wrapper {
+            position: relative;
+        }
+        
+        .photo-input-label {
+            display: block;
+            background: var(--color-bg-card);
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-input-label:hover {
+            border-color: var(--color-accent);
+            background: rgba(255, 140, 0, 0.05);
+        }
+        
+        .photo-input-label:active {
+            transform: scale(0.98);
+        }
+        
+        .photo-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .photo-input-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--spacing-md);
+            color: var(--color-accent);
+        }
+        
+        .photo-input-text {
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+        
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .photo-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--color-bg-input);
+        }
+        
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-preview-remove {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            line-height: 1;
+            transition: background var(--transition-fast);
+        }
+        
+        .photo-preview-remove:hover {
+            background: rgba(244, 67, 54, 0.9);
+        }
+        
+        /* Submit Button - FORCE THE SUBMIT BUTTON TO BE BRIGHT */
+        button[type="submit"],
+        .submit-button {
+            background-color: #F5B301 !important; /* Force Bright Amber */
+            color: #000000 !important; /* Force Pitch Black Text */
+            opacity: 1 !important; /* Remove any transparency */
+            filter: none !important; /* Remove any dimming filters */
+            box-shadow: 0 4px 14px rgba(245, 179, 1, 0.4); /* Optional: Adds that "Glow" you liked */
+            font-weight: 800;
+            border: none;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        button[type="submit"]:not(:disabled):hover,
+        .submit-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 179, 1, 0.4) !important;
+            background-color: #F5C630 !important;
+            color: #000000 !important;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+        
+        button[type="submit"]:not(:disabled):active,
+        .submit-button:not(:disabled):active {
+            transform: scale(0.98);
+            background-color: #F5B301 !important;
+            color: #000000 !important;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+        
+        button[type="submit"]:disabled,
+        .submit-button:disabled {
+            opacity: 0.6 !important;
+            cursor: not-allowed;
+            transform: none;
+            background-color: #F5B301 !important;
+            color: #000000 !important;
+            filter: none !important;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success View */
+        .success-view {
+            text-align: center;
+            padding: var(--spacing-2xl) var(--spacing-md);
+        }
+        
+        .success-logo {
+            height: 80px;
+            width: auto;
+            margin: 0 auto var(--spacing-xl);
+            object-fit: contain;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-xl);
+            color: var(--color-success);
+        }
+        
+        .success-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        .success-message {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        /* Error State */
+        .error-state {
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-error);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+        
+        .error-state-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--color-error);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .error-state-message {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border);
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+            z-index: 100;
+        }
+        
+        .form-footer {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+        
+        .form-footer a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .view.active {
+            animation: fadeIn var(--transition-base);
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            .view {
+                padding: var(--spacing-sm);
+                padding-bottom: calc(var(--spacing-sm) + 60px);
+            }
+            
+            .header-top-bar {
+                margin: calc(-1 * var(--spacing-sm)) calc(-1 * var(--spacing-sm)) 0;
+            }
+            
+            .header-bar {
+                padding: var(--spacing-xs) var(--spacing-md);
+                margin: 0 calc(-1 * var(--spacing-sm)) var(--spacing-md);
+            }
+            
+            .header-brand-mark {
+                height: 18px;
+            }
+            
+            .header-title {
+                font-size: var(--font-size-title);
+            }
+            
+            .found-equipment-logo img {
+                width: 120px;
+            }
+            
+            .action-button {
+                padding: var(--spacing-md) var(--spacing-lg);
+                min-height: 70px;
+            }
+            
+            .form-heading {
+                font-size: var(--font-size-xl);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Landing View -->
+        <div id="landingView" class="view active">
+            <div class="header-top-bar"></div>
+            <div class="header-bar">
+                <div class="header-left">
+                    <div class="header-brand-mark"></div>
+                    <span class="header-title"><span class="title-bold">Will Power</span> <span class="title-normal">Equipment</span></span>
+                </div>
+            </div>
+            
+            <div class="asset-badge" id="landingAssetBadge" data-asset="Unassigned">Asset: Unassigned</div>
+            
+            <div class="action-buttons">
+                <button class="action-button" id="reportIssueBtn">
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Report a Problem</span>
+                        <span class="action-button-subtext">Maintenance, damage, or service requests.</span>
+                    </div>
+                </button>
+                
+                <button class="action-button" disabled>
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Check in / check out</span>
+                        <span class="action-button-subtext">Coming soon</span>
+                    </div>
+                </button>
+                
+                <button class="action-button" disabled>
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Inspection</span>
+                        <span class="action-button-subtext">Coming soon</span>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="found-equipment">
+                <div class="found-equipment-logo">
+                    <img src="WillPower Logo.png" alt="Will Power Equipment">
+                </div>
+                <div class="found-equipment-title">Property of Will Power Excavation</div>
+                <div>If found, please return to shop or call:</div>
+                <div class="found-equipment-phone"><a href="tel:317-000-0000">317-000-0000</a></div>
+            </div>
+        </div>
+        
+        <!-- Form View -->
+        <div id="formView" class="view">
+            <div class="header-top-bar"></div>
+            <div class="header-bar">
+                <div class="header-left">
+                    <div class="header-brand-mark"></div>
+                    <span class="header-title"><span class="title-bold">Will Power</span> <span class="title-normal">Equipment</span></span>
+                </div>
+                <button class="close-button" id="closeFormBtn" title="Close">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="form-container">
+                <h1 class="form-heading">Report a Problem</h1>
+                
+                <form id="reportForm">
+                    <!-- Section 1: Context -->
+                    <div class="form-section">
+                        <div class="form-group" id="machineInfoGroup">
+                            <div id="machineInfoText" style="display: none;">
+                                <div style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-xs);">Reporting on:</div>
+                                <div style="color: var(--color-text-primary); font-size: var(--font-size-lg); font-weight: 600;" id="machineInfoDisplay"></div>
+                            </div>
+                            <div id="machineInfoInput">
+                                <label class="form-label">Machine ID (Optional)</label>
+                                <input type="text" class="form-input" id="machineNameNumber" name="machineNameNumber" placeholder="Scan QR or enter ID">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Project <span class="required">*</span></label>
+                            <select class="form-select" id="project" name="project" required>
+                                <option value="">Select a project</option>
+                                <option value="Job 101 - River Rd">Job 101 - River Rd</option>
+                                <option value="Job 204 - Main St">Job 204 - Main St</option>
+                            </select>
+                            <div class="form-error">Please select a project</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Crew <span class="required">*</span></label>
+                            <select class="form-select" id="crew" name="crew" required>
+                                <option value="">Select a crew</option>
+                                <option value="Crew A">Crew A</option>
+                                <option value="Crew B">Crew B</option>
+                                <option value="Crew C">Crew C</option>
+                            </select>
+                            <div class="form-error">Please select a crew</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 2: The Issue -->
+                    <div class="form-section">
+                        <div class="form-section-title">Severity <span class="required">*</span></div>
+                        <div class="selectable-cards">
+                            <div class="selectable-card severity-card down" data-severity="down">
+                                <svg class="severity-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <div class="severity-card-content">
+                                    <div class="severity-card-label">Machine Down</div>
+                                    <div class="severity-card-subtext">Urgent. Work stopped.</div>
+                                </div>
+                            </div>
+                            <div class="selectable-card severity-card performance" data-severity="performance">
+                                <svg class="severity-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <div class="severity-card-content">
+                                    <div class="severity-card-label">Performance Issue</div>
+                                    <div class="severity-card-subtext">Machine running but needs service.</div>
+                                </div>
+                            </div>
+                            <div class="selectable-card severity-card minor" data-severity="minor">
+                                <svg class="severity-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <div class="severity-card-content">
+                                    <div class="severity-card-label">Minor / Maintenance</div>
+                                    <div class="severity-card-subtext">Routine fix or cosmetic.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-error" id="severityError">Please select a severity level</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description <span class="required">*</span></label>
+                            <textarea class="form-textarea" id="description" name="description" required placeholder="Describe the issue..."></textarea>
+                            <div class="form-error">Please enter a description</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 3: Evidence -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Photos <span class="required">*</span></label>
+                            <div class="photo-uploader">
+                                <div class="photo-input-wrapper">
+                                    <label for="photos" class="photo-input-label">
+                                        <svg class="photo-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <div class="photo-input-text">Tap to take photo</div>
+                                    </label>
+                                    <input type="file" class="photo-input" id="photos" name="photos" accept="image/*" multiple capture="environment">
+                                </div>
+                                <div class="photo-preview-grid" id="photoPreview"></div>
+                            </div>
+                            <div class="form-error">Please add at least one photo</div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-button" id="submitBtn" disabled style="margin-top: 32px;">
+                        Submit Report
+                    </button>
+                    
+                    <div id="errorState" class="error-state" style="display: none;">
+                        <div class="error-state-title">Submission Failed</div>
+                        <div class="error-state-message" id="errorMessage"></div>
+                        <button type="button" class="submit-button" id="retryBtn">Try Again</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Success View -->
+        <div id="successView" class="view success-view">
+            <img src="willpower-logo.png" alt="Will Power Equipment" class="success-logo">
+            <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <h2 class="success-title">Issue submitted</h2>
+            <p class="success-message">Your report has been sent to the service team.</p>
+            <button class="submit-button" id="reportAnotherBtn">Report another issue</button>
+        </div>
+    </div>
+    
+    <div class="footer">Powered by ToolGuard</div>
+    
+    <script>
+        // Configuration - REPLACE THESE VALUES
+        const WEBHOOK_URL = "https://YOUR_N8N_WEBHOOK_URL_HERE";
+        // Phone number is in HTML: 317-000-0000 (replace in two places: notice card and form footer)
+        // Logo filename: WillPower Logo.png (already set in three places: landing header, form header, success view)
+        
+        // State
+        let currentView = 'landing';
+        let selectedSeverity = null;
+        let photos = [];
+        let assetId = null;
+        let token = null;
+        
+        // Parse URL params
+        function parseURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const assetParam = params.get('asset');
+            assetId = assetParam || null;
+            token = params.get('token') || null;
+            
+            // Update asset badges
+            const landingBadge = document.getElementById('landingAssetBadge');
+            
+            if (assetParam) {
+                if (landingBadge) {
+                    landingBadge.textContent = `Asset: ${assetId}`;
+                    landingBadge.setAttribute('data-asset', assetId);
+                }
+                
+                // Show machine info text and hide input if asset param exists
+                const machineInfoText = document.getElementById('machineInfoText');
+                const machineInfoInput = document.getElementById('machineInfoInput');
+                const machineInfoDisplay = document.getElementById('machineInfoDisplay');
+                const machineField = document.getElementById('machineNameNumber');
+                
+                if (machineInfoText && machineInfoInput && machineInfoDisplay) {
+                    machineInfoText.style.display = 'block';
+                    machineInfoInput.style.display = 'none';
+                    machineInfoDisplay.textContent = assetId;
+                }
+                
+                // Set hidden value for form submission
+                if (machineField) {
+                    machineField.value = assetId;
+                    machineField.required = false;
+                }
+            } else {
+                if (landingBadge) {
+                    landingBadge.textContent = 'Asset: Unassigned';
+                    landingBadge.setAttribute('data-asset', 'Unassigned');
+                }
+                
+                // Show input field if no asset param
+                const machineInfoText = document.getElementById('machineInfoText');
+                const machineInfoInput = document.getElementById('machineInfoInput');
+                
+                if (machineInfoText && machineInfoInput) {
+                    machineInfoText.style.display = 'none';
+                    machineInfoInput.style.display = 'block';
+                }
+            }
+        }
+        
+        // View Management
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewName + 'View').classList.add('active');
+            currentView = viewName;
+        }
+        
+        // Severity Selection
+        document.querySelectorAll('[data-severity]').forEach(card => {
+            card.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                
+                document.querySelectorAll('[data-severity]').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                selectedSeverity = this.dataset.severity;
+                
+                // Hide error message when severity is selected
+                const severityError = document.getElementById('severityError');
+                if (severityError) severityError.style.display = 'none';
+                
+                validateForm();
+            });
+        });
+        
+        // Photo Upload Handlers
+        function setupPhotoUpload(inputId, previewId, photosArray) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            function rebuildPreview() {
+                preview.innerHTML = '';
+                photosArray.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'photo-preview';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="photo-preview-remove" data-index="${index}">×</button>
+                        `;
+                        preview.appendChild(previewItem);
+                        
+                        previewItem.querySelector('.photo-preview-remove').addEventListener('click', function() {
+                            const index = parseInt(this.dataset.index);
+                            photosArray.splice(index, 1);
+                            rebuildPreview();
+                            validateForm();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            input.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        photosArray.push(file);
+                    }
+                });
+                rebuildPreview();
+                validateForm();
+                // Reset input to allow selecting same file again
+                input.value = '';
+            });
+        }
+        
+        setupPhotoUpload('photos', 'photoPreview', photos);
+        
+        // Form Validation
+        function validateForm() {
+            const submitBtn = document.getElementById('submitBtn');
+            let isValid = true;
+            
+            // Check severity
+            if (!selectedSeverity) {
+                isValid = false;
+            }
+            
+            // Check shared required fields
+            const project = document.getElementById('project').value;
+            const crew = document.getElementById('crew').value;
+            const machineNameNumber = document.getElementById('machineNameNumber').value.trim();
+            const description = document.getElementById('description').value.trim();
+            
+            // Machine ID is optional, so don't check it
+            if (!project || !crew || !description) {
+                isValid = false;
+            }
+            
+            // Check photos
+            if (photos.length === 0) {
+                isValid = false;
+            }
+            
+            submitBtn.disabled = !isValid;
+        }
+        
+        // Add validation listeners
+        ['project', 'crew', 'machineNameNumber', 'description'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element && !element.readOnly) {
+                element.addEventListener('input', function() {
+                    const value = this.type === 'select-one' ? this.value : this.value.trim();
+                    if (value) {
+                        this.closest('.form-group')?.classList.remove('error');
+                    }
+                    validateForm();
+                });
+                element.addEventListener('change', validateForm);
+            }
+        });
+        
+        // Form Submission
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorState = document.getElementById('errorState');
+            errorState.style.display = 'none';
+            
+            // Validate before submit
+            let hasErrors = false;
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            
+            if (!selectedSeverity) {
+                const severityError = document.getElementById('severityError');
+                if (severityError) severityError.style.display = 'block';
+                hasErrors = true;
+            }
+            
+            const project = document.getElementById('project').value;
+            const crew = document.getElementById('crew').value;
+            const machineNameNumber = document.getElementById('machineNameNumber').value.trim();
+            const description = document.getElementById('description').value.trim();
+            
+            if (!project) {
+                document.getElementById('project').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            if (!crew) {
+                document.getElementById('crew').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            // Machine ID is optional, so skip validation
+            if (!description) {
+                document.getElementById('description').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (photos.length === 0) {
+                document.getElementById('photos').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (hasErrors) {
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div> Submitting';
+            
+            // Build FormData
+            const formData = new FormData();
+            if (assetId) formData.append('asset', assetId);
+            if (token) formData.append('token', token);
+            formData.append('severity', selectedSeverity);
+            formData.append('project', project);
+            formData.append('crew', crew);
+            formData.append('machineNameNumber', machineNameNumber);
+            formData.append('description', description);
+            formData.append('submittedAt', new Date().toISOString());
+            
+            photos.forEach((photo, index) => {
+                formData.append('photos[]', photo);
+            });
+            
+            // Submit
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    showView('success');
+                } else {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+            } catch (error) {
+                errorState.style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Failed to submit. Please check your connection and try again.';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Report';
+            }
+        });
+        
+        // Navigation
+        document.getElementById('reportIssueBtn').addEventListener('click', function() {
+            showView('form');
+        });
+        
+        document.getElementById('closeFormBtn').addEventListener('click', function() {
+            showView('landing');
+        });
+        
+        document.getElementById('reportAnotherBtn').addEventListener('click', function() {
+            // Reset form
+            document.getElementById('reportForm').reset();
+            selectedSeverity = null;
+            photos = [];
+            document.getElementById('photoPreview').innerHTML = '';
+            document.querySelectorAll('.selectable-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('errorState').style.display = 'none';
+            
+            // Reset machine info display
+            const machineInfoText = document.getElementById('machineInfoText');
+            const machineInfoInput = document.getElementById('machineInfoInput');
+            if (machineInfoText && machineInfoInput) {
+                machineInfoText.style.display = 'none';
+                machineInfoInput.style.display = 'block';
+            }
+            
+            // Re-parse URL params to restore state if needed
+            parseURLParams();
+            validateForm();
+            showView('landing');
+        });
+        
+        document.getElementById('retryBtn').addEventListener('click', function() {
+            document.getElementById('reportForm').dispatchEvent(new Event('submit'));
+        });
+        
+        // Initialize
+        parseURLParams();
+        validateForm();
+    </script>
+</body>
+</html>
