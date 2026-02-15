@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Will Power Equipment - Equipment Issue Reporting">
+    <title>Will Power Equipment - Issue Reporting</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --color-bg-primary: #0a0a0a;
+            --color-bg-secondary: #1a1a1a;
+            --color-bg-card: #242424;
+            --color-bg-input: #2a2a2a;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #b0b0b0;
+            --color-text-disabled: #666666;
+            --accent: #F5B301;
+            --accentSoft: rgba(245,179,1,0.18);
+            --accentBorder: rgba(245,179,1,0.65);
+            --color-accent: #F5B301;
+            --color-accent-hover: #F5C630;
+            --color-accent-press: #D99F00;
+            --color-success: #4caf50;
+            --color-error: #f44336;
+            --color-border: #3a3a3a;
+            --color-border-focus: #F5B301;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+            
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 350ms ease;
+            
+            --font-size-xs: 0.8125rem; /* 13px */
+            --font-size-sm: 0.9375rem; /* 15px */
+            --font-size-base: 1rem; /* 16px */
+            --font-size-lg: 1.125rem; /* 18px */
+            --font-size-xl: 1.25rem; /* 20px */
+            --font-size-title: 1.375rem; /* 22px */
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+        }
+        
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Layout */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .view {
+            display: none;
+            flex: 1;
+            padding: var(--spacing-md);
+            padding-bottom: calc(var(--spacing-md) + 60px);
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Bar */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: var(--spacing-md);
+            background: var(--color-bg-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) var(--spacing-lg);
+        }
+        
+        .header-brand-mark {
+            width: 4px;
+            height: 32px;
+            background: #F5B301;
+            border-radius: 2px;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+        
+        .header-title {
+            font-size: 1.5rem; /* 24px desktop */
+            color: var(--color-text-primary);
+            letter-spacing: -0.2px;
+            line-height: 1.2;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: opacity var(--transition-fast);
+        }
+        
+        .back-button:hover {
+            opacity: 0.8;
+        }
+        
+        .back-button:active {
+            opacity: 0.6;
+        }
+        
+        /* Asset Badge */
+        .asset-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            line-height: 1.3;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+        }
+        
+        .asset-badge.hidden {
+            display: none;
+        }
+        
+        .asset-badge-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: var(--accent);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .action-button {
+            background: rgba(245, 179, 1, 0.15);
+            border: 2px solid var(--accent);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+            text-align: left;
+            min-height: 80px;
+        }
+        
+        .action-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accentSoft);
+            border-color: var(--accent);
+        }
+        
+        .action-button:not(:disabled):active {
+            transform: translateY(1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .action-button:not(:disabled) .action-button-icon {
+            color: var(--accent);
+        }
+        
+        .action-button-label {
+            font-weight: 700;
+        }
+        
+        .action-button:disabled {
+            background: #1A1A1A;
+            border: none;
+            color: var(--color-text-disabled);
+            cursor: not-allowed;
+            opacity: 0.5;
+            box-shadow: none;
+        }
+        
+        .action-button:disabled .action-button-icon {
+            color: var(--color-text-disabled);
+        }
+        
+        .action-button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .action-button-content {
+            flex: 1;
+        }
+        
+        .action-button-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+        
+        .action-button-subtext {
+            display: block;
+            font-size: var(--font-size-xs);
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        
+        .action-button-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: color var(--transition-base);
+        }
+        
+        /* Found Equipment Section */
+        .found-equipment {
+            margin-top: auto;
+            padding-top: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+        
+        .found-equipment-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.9;
+        }
+        
+        .found-equipment-text {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.5;
+        }
+        
+        .found-equipment-phone {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        .found-equipment-phone:active {
+            color: var(--accent);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            flex: 1;
+        }
+        
+        .form-heading {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xl);
+            color: var(--color-text-primary);
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        /* Selectable Cards */
+        .selectable-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .selectable-card {
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-align: center;
+        }
+        
+        .selectable-card:hover:not(.disabled) {
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .selectable-card.selected {
+            border-color: var(--color-accent);
+            background: rgba(255, 140, 0, 0.1);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .selectable-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .selectable-card-label {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        /* Form Fields */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .form-label .required {
+            color: var(--color-error);
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--color-bg-input);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-family: inherit;
+            transition: border-color var(--transition-fast);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-border-focus);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-error {
+            color: var(--color-error);
+            font-size: var(--font-size-sm);
+            margin-top: var(--spacing-xs);
+            display: none;
+        }
+        
+        .form-group.error .form-error {
+            display: block;
+        }
+        
+        .form-group.error .form-input,
+        .form-group.error .form-select,
+        .form-group.error .form-textarea {
+            border-color: var(--color-error);
+        }
+        
+        /* Photo Uploader */
+        .photo-uploader {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .photo-input-wrapper {
+            position: relative;
+        }
+        
+        .photo-input-label {
+            display: block;
+            background: var(--color-bg-card);
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+        
+        .photo-input-label:hover {
+            border-color: var(--color-accent);
+            background: rgba(255, 140, 0, 0.05);
+        }
+        
+        .photo-input-label:active {
+            transform: scale(0.98);
+        }
+        
+        .photo-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .photo-input-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--spacing-md);
+            color: var(--color-accent);
+        }
+        
+        .photo-input-text {
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+        
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .photo-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--color-bg-input);
+        }
+        
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-preview-remove {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            line-height: 1;
+            transition: background var(--transition-fast);
+        }
+        
+        .photo-preview-remove:hover {
+            background: rgba(244, 67, 54, 0.9);
+        }
+        
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-press) 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
+            margin-top: var(--spacing-xl);
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .submit-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .submit-button:not(:disabled):active {
+            transform: scale(0.98);
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success View */
+        .success-view {
+            text-align: center;
+            padding: var(--spacing-2xl) var(--spacing-md);
+        }
+        
+        .success-logo {
+            height: 80px;
+            width: auto;
+            margin: 0 auto var(--spacing-xl);
+            object-fit: contain;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-xl);
+            color: var(--color-success);
+        }
+        
+        .success-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        .success-message {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        /* Error State */
+        .error-state {
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-error);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+        
+        .error-state-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--color-error);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .error-state-message {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border);
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-disabled);
+            z-index: 100;
+        }
+        
+        .form-footer {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+        
+        .form-footer a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .view.active {
+            animation: fadeIn var(--transition-base);
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            .view {
+                padding: var(--spacing-sm);
+                padding-bottom: calc(var(--spacing-sm) + 60px);
+            }
+            
+            .header-bar {
+                padding: var(--spacing-sm) var(--spacing-md);
+                margin: calc(-1 * var(--spacing-sm)) calc(-1 * var(--spacing-sm)) var(--spacing-md);
+            }
+            
+            .logo-wrapper {
+                padding: 6px;
+            }
+            
+            .logo {
+                height: 34px;
+            }
+            
+            .header-title {
+                font-size: 1.375rem; /* 22px mobile */
+            }
+            
+            .action-button {
+                padding: var(--spacing-md) var(--spacing-lg);
+                min-height: 80px; /* Ensure 48px+ touch target */
+            }
+            
+            .found-equipment-phone {
+                font-size: var(--font-size-base);
+            }
+            
+            .form-heading {
+                font-size: var(--font-size-xl);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Landing View -->
+        <div id="landingView" class="view active">
+            <div class="header-bar">
+                <div class="header-brand-mark"></div>
+                <span class="header-title">Will Power Equipment</span>
+            </div>
+            
+            <div class="asset-badge hidden" id="landingAssetBadge">
+                <svg class="asset-badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>UNIT: <span id="assetIdDisplay"></span></span>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-button" id="reportIssueBtn">
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Report a Problem</span>
+                        <span class="action-button-subtext">Maintenance, damage, or service requests.</span>
+                    </div>
+                </button>
+                
+                <button class="action-button" disabled>
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Check in / check out</span>
+                        <span class="action-button-subtext">Coming soon</span>
+                    </div>
+                </button>
+                
+                <button class="action-button" disabled>
+                    <svg class="action-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="action-button-content">
+                        <span class="action-button-label">Inspection</span>
+                        <span class="action-button-subtext">Coming soon</span>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="found-equipment">
+                <img src="WillPower Logo.png" alt="Will Power Excavation" class="found-equipment-logo">
+                <div class="found-equipment-text">Property of Will Power Excavation. If found, return to shop or call:</div>
+                <a href="tel:317-000-0000" class="found-equipment-phone">317-000-0000</a>
+            </div>
+        </div>
+        
+        <!-- Form View -->
+        <div id="formView" class="view">
+            <div class="header-bar">
+                <div class="header-left">
+                    <img src="WillPower Logo.png" alt="Will Power Equipment" class="logo">
+                    <span class="header-title">Equipment Issue Reporting</span>
+                </div>
+                <button class="back-button" id="backToLandingBtn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+            </div>
+            
+            <div class="asset-badge" id="formAssetBadge">Asset: Unknown</div>
+            
+            <div class="form-container">
+                <h1 class="form-heading">Report damage or maintenance</h1>
+                
+                <form id="reportForm">
+                    <!-- Issue Type Selection -->
+                    <div class="form-section">
+                        <div class="form-section-title">Issue type <span class="required">*</span></div>
+                        <div class="selectable-cards">
+                            <div class="selectable-card" data-issue-type="damage">
+                                <div class="selectable-card-label">Damage or breakdown</div>
+                            </div>
+                            <div class="selectable-card" data-issue-type="maintenance">
+                                <div class="selectable-card-label">Maintenance or service request</div>
+                            </div>
+                        </div>
+                        <div class="form-error" id="issueTypeError">Please select an issue type</div>
+                    </div>
+                    
+                    <!-- Shared Fields -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label class="form-label">Project <span class="required">*</span></label>
+                            <select class="form-select" id="project" name="project" required>
+                                <option value="">Select a project</option>
+                                <option value="Project A">Project A</option>
+                                <option value="Project B">Project B</option>
+                                <option value="Project C">Project C</option>
+                            </select>
+                            <div class="form-error">Please select a project</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Crew <span class="required">*</span></label>
+                            <select class="form-select" id="crew" name="crew" required>
+                                <option value="">Select a crew</option>
+                                <option value="Crew 1">Crew 1</option>
+                                <option value="Crew 2">Crew 2</option>
+                                <option value="Crew 3">Crew 3</option>
+                            </select>
+                            <div class="form-error">Please select a crew</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Machine name and number <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="machineNameNumber" name="machineNameNumber" required placeholder="e.g., Excavator EX-102">
+                            <div class="form-error">Please enter machine name and number</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Location <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="location" name="location" required placeholder="e.g., North lot, Jobsite, Shop yard">
+                            <div class="form-error">Please enter location</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description <span class="required">*</span></label>
+                            <textarea class="form-textarea" id="description" name="description" required placeholder="Describe the issue..."></textarea>
+                            <div class="form-error">Please enter a description</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Damage-specific Fields -->
+                    <div class="form-section" id="damageFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Photos <span class="required">*</span></label>
+                            <div class="photo-uploader">
+                                <div class="photo-input-wrapper">
+                                    <label for="damagePhotos" class="photo-input-label">
+                                        <svg class="photo-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <div class="photo-input-text">Tap to add photos</div>
+                                    </label>
+                                    <input type="file" class="photo-input" id="damagePhotos" name="damagePhotos" accept="image/*" multiple capture="environment">
+                                </div>
+                                <div class="photo-preview-grid" id="damagePhotoPreview"></div>
+                            </div>
+                            <div class="form-error">Please add at least one photo</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Maintenance-specific Fields -->
+                    <div class="form-section" id="maintenanceFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Service needed <span class="required">*</span></label>
+                            <textarea class="form-textarea" id="serviceNeeded" name="serviceNeeded" placeholder="Describe what service is needed..."></textarea>
+                            <div class="form-error">Please describe the service needed</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Severity <span class="required">*</span></label>
+                            <div class="selectable-cards">
+                                <div class="selectable-card" data-severity="immediate">
+                                    <div class="selectable-card-label">Immediate about to break</div>
+                                </div>
+                                <div class="selectable-card" data-severity="soon">
+                                    <div class="selectable-card-label">Needs checked soon</div>
+                                </div>
+                                <div class="selectable-card" data-severity="normal">
+                                    <div class="selectable-card-label">Normal service</div>
+                                </div>
+                            </div>
+                            <div class="form-error">Please select a severity level</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Photos <span class="required">*</span></label>
+                            <div class="photo-uploader">
+                                <div class="photo-input-wrapper">
+                                    <label for="maintenancePhotos" class="photo-input-label">
+                                        <svg class="photo-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <div class="photo-input-text">Tap to add photos</div>
+                                    </label>
+                                    <input type="file" class="photo-input" id="maintenancePhotos" name="maintenancePhotos" accept="image/*" multiple capture="environment">
+                                </div>
+                                <div class="photo-preview-grid" id="maintenancePhotoPreview"></div>
+                            </div>
+                            <div class="form-error">Please add at least one photo</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-footer">
+                        Shop phone: <a href="tel:317-000-0000">317-000-0000</a>
+                    </div>
+                    
+                    <button type="submit" class="submit-button" id="submitBtn" disabled>
+                        Submit Report
+                    </button>
+                    
+                    <div id="errorState" class="error-state" style="display: none;">
+                        <div class="error-state-title">Submission Failed</div>
+                        <div class="error-state-message" id="errorMessage"></div>
+                        <button type="button" class="submit-button" id="retryBtn">Try Again</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Success View -->
+        <div id="successView" class="view success-view">
+            <img src="willpower-logo.png" alt="Will Power Equipment" class="success-logo">
+            <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <h2 class="success-title">Issue submitted</h2>
+            <p class="success-message">Your report has been sent to the service team.</p>
+            <button class="submit-button" id="reportAnotherBtn">Report another issue</button>
+        </div>
+    </div>
+    
+    <div class="footer">Powered by ToolGuard</div>
+    
+    <script>
+        // Configuration - REPLACE THESE VALUES
+        const WEBHOOK_URL = "https://YOUR_N8N_WEBHOOK_URL_HERE";
+        // Phone number is in HTML: 317-000-0000 (replace in two places: notice card and form footer)
+        // Logo filename: WillPower Logo.png (already set in three places: landing header, form header, success view)
+        
+        // State
+        let currentView = 'landing';
+        let selectedIssueType = null;
+        let selectedSeverity = null;
+        let damagePhotos = [];
+        let maintenancePhotos = [];
+        let assetId = 'Unknown';
+        let token = null;
+        
+        // Parse URL params
+        function parseURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const assetParam = params.get('asset');
+            assetId = assetParam || 'Unknown';
+            token = params.get('token') || null;
+            
+            // Update asset badges
+            const landingBadge = document.getElementById('landingAssetBadge');
+            const assetIdDisplay = document.getElementById('assetIdDisplay');
+            const formBadge = document.getElementById('formAssetBadge');
+            
+            if (assetParam) {
+                // Show landing badge with asset ID
+                if (landingBadge) {
+                    landingBadge.classList.remove('hidden');
+                    if (assetIdDisplay) assetIdDisplay.textContent = assetId;
+                }
+                if (formBadge) formBadge.textContent = `Asset: ${assetId}`;
+            } else {
+                // Hide landing badge completely if no asset
+                if (landingBadge) landingBadge.classList.add('hidden');
+                if (formBadge) formBadge.textContent = 'Asset: Unassigned';
+            }
+        }
+        
+        // View Management
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewName + 'View').classList.add('active');
+            currentView = viewName;
+        }
+        
+        // Issue Type Selection
+        document.querySelectorAll('[data-issue-type]').forEach(card => {
+            card.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                
+                document.querySelectorAll('[data-issue-type]').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                
+                selectedIssueType = this.dataset.issueType;
+                
+                // Hide error message when issue type is selected
+                document.getElementById('issueTypeError').style.display = 'none';
+                
+                // Show/hide fields based on issue type
+                if (selectedIssueType === 'damage') {
+                    document.getElementById('damageFields').style.display = 'block';
+                    document.getElementById('maintenanceFields').style.display = 'none';
+                    document.getElementById('serviceNeeded').removeAttribute('required');
+                    document.querySelectorAll('[data-severity]').forEach(c => c.classList.remove('selected'));
+                    selectedSeverity = null;
+                } else {
+                    document.getElementById('damageFields').style.display = 'none';
+                    document.getElementById('maintenanceFields').style.display = 'block';
+                    document.getElementById('serviceNeeded').setAttribute('required', 'required');
+                }
+                
+                validateForm();
+            });
+        });
+        
+        // Severity Selection
+        document.querySelectorAll('[data-severity]').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('[data-severity]').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                selectedSeverity = this.dataset.severity;
+                
+                // Hide error message when severity is selected
+                const severityError = document.querySelector('[data-severity]').closest('.form-group').querySelector('.form-error');
+                if (severityError) severityError.style.display = 'none';
+                
+                validateForm();
+            });
+        });
+        
+        // Photo Upload Handlers
+        function setupPhotoUpload(inputId, previewId, photosArray) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            
+            function rebuildPreview() {
+                preview.innerHTML = '';
+                photosArray.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'photo-preview';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="photo-preview-remove" data-index="${index}">×</button>
+                        `;
+                        preview.appendChild(previewItem);
+                        
+                        previewItem.querySelector('.photo-preview-remove').addEventListener('click', function() {
+                            const index = parseInt(this.dataset.index);
+                            photosArray.splice(index, 1);
+                            rebuildPreview();
+                            validateForm();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            input.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        photosArray.push(file);
+                    }
+                });
+                rebuildPreview();
+                validateForm();
+                // Reset input to allow selecting same file again
+                input.value = '';
+            });
+        }
+        
+        setupPhotoUpload('damagePhotos', 'damagePhotoPreview', damagePhotos);
+        setupPhotoUpload('maintenancePhotos', 'maintenancePhotoPreview', maintenancePhotos);
+        
+        // Form Validation
+        function validateForm() {
+            const submitBtn = document.getElementById('submitBtn');
+            let isValid = true;
+            
+            // Check issue type
+            if (!selectedIssueType) {
+                isValid = false;
+            }
+            
+            // Check shared required fields
+            const project = document.getElementById('project').value;
+            const crew = document.getElementById('crew').value;
+            const machineNameNumber = document.getElementById('machineNameNumber').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const description = document.getElementById('description').value.trim();
+            
+            if (!project || !crew || !machineNameNumber || !location || !description) {
+                isValid = false;
+            }
+            
+            // Check issue-specific fields
+            if (selectedIssueType === 'damage') {
+                if (damagePhotos.length === 0) {
+                    isValid = false;
+                }
+            } else if (selectedIssueType === 'maintenance') {
+                const serviceNeeded = document.getElementById('serviceNeeded').value.trim();
+                if (!serviceNeeded || !selectedSeverity || maintenancePhotos.length === 0) {
+                    isValid = false;
+                }
+            }
+            
+            submitBtn.disabled = !isValid;
+        }
+        
+        // Add validation listeners
+        ['project', 'crew', 'machineNameNumber', 'location', 'description', 'serviceNeeded'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', function() {
+                    const value = this.type === 'select-one' ? this.value : this.value.trim();
+                    if (value) {
+                        this.closest('.form-group')?.classList.remove('error');
+                    }
+                    validateForm();
+                });
+                element.addEventListener('change', validateForm);
+            }
+        });
+        
+        // Form Submission
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorState = document.getElementById('errorState');
+            errorState.style.display = 'none';
+            
+            // Validate before submit
+            let hasErrors = false;
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            
+            if (!selectedIssueType) {
+                document.querySelector('[data-issue-type]').closest('.form-section').querySelector('.form-error').style.display = 'block';
+                hasErrors = true;
+            }
+            
+            const project = document.getElementById('project').value;
+            const crew = document.getElementById('crew').value;
+            const machineNameNumber = document.getElementById('machineNameNumber').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const description = document.getElementById('description').value.trim();
+            
+            if (!project) {
+                document.getElementById('project').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            if (!crew) {
+                document.getElementById('crew').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            if (!machineNameNumber) {
+                document.getElementById('machineNameNumber').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            if (!location) {
+                document.getElementById('location').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            if (!description) {
+                document.getElementById('description').closest('.form-group').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (selectedIssueType === 'damage') {
+                if (damagePhotos.length === 0) {
+                    document.getElementById('damagePhotos').closest('.form-group').classList.add('error');
+                    hasErrors = true;
+                }
+            } else if (selectedIssueType === 'maintenance') {
+                const serviceNeeded = document.getElementById('serviceNeeded').value.trim();
+                if (!serviceNeeded) {
+                    document.getElementById('serviceNeeded').closest('.form-group').classList.add('error');
+                    hasErrors = true;
+                }
+                if (!selectedSeverity) {
+                    document.querySelector('[data-severity]').closest('.form-group').querySelector('.form-error').style.display = 'block';
+                    hasErrors = true;
+                }
+                if (maintenancePhotos.length === 0) {
+                    document.getElementById('maintenancePhotos').closest('.form-group').classList.add('error');
+                    hasErrors = true;
+                }
+            }
+            
+            if (hasErrors) {
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div> Submitting';
+            
+            // Build FormData
+            const formData = new FormData();
+            formData.append('asset', assetId);
+            if (token) formData.append('token', token);
+            formData.append('issueType', selectedIssueType);
+            formData.append('project', project);
+            formData.append('crew', crew);
+            formData.append('machineNameNumber', machineNameNumber);
+            formData.append('location', location);
+            formData.append('description', description);
+            formData.append('submittedAt', new Date().toISOString());
+            
+            if (selectedIssueType === 'maintenance') {
+                formData.append('serviceNeeded', document.getElementById('serviceNeeded').value.trim());
+                formData.append('severity', selectedSeverity);
+                maintenancePhotos.forEach((photo, index) => {
+                    formData.append('photos[]', photo);
+                });
+            } else {
+                damagePhotos.forEach((photo, index) => {
+                    formData.append('photos[]', photo);
+                });
+            }
+            
+            // Submit
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    showView('success');
+                } else {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+            } catch (error) {
+                errorState.style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Failed to submit. Please check your connection and try again.';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Report';
+            }
+        });
+        
+        // Navigation
+        document.getElementById('reportIssueBtn').addEventListener('click', function() {
+            showView('form');
+        });
+        
+        document.getElementById('backToLandingBtn').addEventListener('click', function() {
+            showView('landing');
+        });
+        
+        document.getElementById('reportAnotherBtn').addEventListener('click', function() {
+            // Reset form
+            document.getElementById('reportForm').reset();
+            selectedIssueType = null;
+            selectedSeverity = null;
+            damagePhotos = [];
+            maintenancePhotos = [];
+            document.getElementById('damagePhotoPreview').innerHTML = '';
+            document.getElementById('maintenancePhotoPreview').innerHTML = '';
+            document.querySelectorAll('.selectable-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('damageFields').style.display = 'none';
+            document.getElementById('maintenanceFields').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            validateForm();
+            showView('landing');
+        });
+        
+        document.getElementById('retryBtn').addEventListener('click', function() {
+            document.getElementById('reportForm').dispatchEvent(new Event('submit'));
+        });
+        
+        // Initialize
+        parseURLParams();
+        validateForm();
+    </script>
+</body>
+</html>
